@@ -133,7 +133,7 @@ class K8sPvc:
                    f'persistentvolumeclaims/{pvc_name}'
 
             api_server = K8sApi()
-            response = api_server.delete(path)
+            api_server.delete(path)
 
     @property
     def is_running(self):
