@@ -56,6 +56,19 @@ class ConfigChangeObserver(BaseObserver):
         logger.info('Pod is not ready')
 
 
+class RemovalObserver(BaseObserver):
+
+    def __init__(self, framework, resources, pod, pvc, builder):
+        super().__init__(framework, resources, pod, builder)
+        self._pvc = pvc
+
+    def handle(self, event):
+        if not self._pod.is_ready:
+            logger.info('Pod deleted, removing remains')
+        self._builder.demolish()
+        logger.info('Pvc cleaned up')
+
+
 class RelationObserver(BaseObserver):
 
     def handle(self, event):
