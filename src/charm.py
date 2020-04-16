@@ -40,13 +40,6 @@ class MongoDbCharm(CharmBase):
             self._framework_wrapper.goal_state_units
         )
 
-        self._k8s_builder = K8sBuilder(
-            self._framework_wrapper.app_name,
-            self._framework_wrapper.config,
-            self._resources,
-            self._framework_wrapper.goal_state_units
-        )
-
         if self._framework_wrapper.config['enable-sidecar']:
             self._resources['mongodb-sidecar-image'] = OCIImageResource(
                 'mongodb-sidecar-image')
@@ -55,9 +48,11 @@ class MongoDbCharm(CharmBase):
         self._pvc = K8sPvc(self._framework_wrapper.app_name)
         self._mongodb = MongoDbServer(self, "mongo")
 
+        self._k8s_builder = K8sBuilder(self._pvc)
+
         delegators = [
             (self.on.start, self.on_config_changed_delegator),
-            (self.on.remove, self.on_removal_delegator),
+            (self.on.stop, self.on_removal_delegator),
             (self.on.upgrade_charm, self.on_config_changed_delegator),
             (self.on.config_changed, self.on_config_changed_delegator),
             (self.on.update_status, self.on_update_status_delegator),
