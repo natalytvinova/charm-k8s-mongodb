@@ -1,4 +1,3 @@
-"name": "remove-pvc"
-"description": "Removes unbound pvc's after unit removal."
-"params":
-  "pvc": "Specified PVC for removal"
+"remove-pvc":
+  "title": "remove-pvc"
+  "description": "Removes unbound pvc's after unit removal."
