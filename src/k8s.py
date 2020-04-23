@@ -62,12 +62,8 @@ class K8sPod:
 
     def map_unit_to_pvc(self):
         if self.is_running:
-            # TODO: refactor mapping and avoid 2 for
-            pvcs = (i['spec']['volumes']['persistentVolumeClaim']['claimName']
-                    for i in self._status)
-            units = (i['metadata']['annotations']['juju.io/unit']
-                     for i in self._status)
-            return dict(zip(units, pvcs))
+            return self._status['spec']['volumes'][0]['persistentVolumeClaim']['claimName']
+        return None
 
     @property
     def is_ready(self):
@@ -103,7 +99,6 @@ class K8sPvc:
         namespace = os.environ["JUJU_MODEL_NAME"]
 
         pods = K8sPod(self._app_name)
-        unit_to_pvc = pods.map_unit_to_pvc()
 
         path = f'/api/v1/namespaces/{namespace}/persistentvolumeclaims?' \
                f'labelSelector=juju-app={self._app_name}'
@@ -113,10 +108,9 @@ class K8sPvc:
 
         if response.get('kind', '') == 'PersistentVolumeClaimList' \
                 and response['items']:
-            unit = os.environ['JUJU_UNIT_NAME']
             status = next(
                 (i for i in response['items']
-                 if i['metadata']['name'] == unit_to_pvc[unit]),
+                 if i['metadata']['name'] == pods.map_unit_to_pvc()),
                 None
             )
         else:
