@@ -14,6 +14,7 @@ from observers import (
     ConfigChangeObserver,
     StatusObserver,
     RelationObserver,
+    BackupObserver,
 )
 from mongodb_interface_provides import MongoDbServer
 from builders import MongoBuilder
@@ -52,6 +53,7 @@ class MongoDbCharm(CharmBase):
             (self.on.config_changed, self.on_config_changed_delegator),
             (self.on.update_status, self.on_update_status_delegator),
             (self._mongodb.on.new_client, self.on_new_client_delegator),
+            (self.on.backup_action, self.on_backup_action_delegator),
         ]
         for delegator in delegators:
             self.framework.observe(delegator[0], delegator[1])
@@ -75,6 +77,14 @@ class MongoDbCharm(CharmBase):
     def on_update_status_delegator(self, event):
         logger.info('on_update_status_delegator({})'.format(event))
         return StatusObserver(
+            self._framework_wrapper,
+            self._resources,
+            self._pod,
+            self._mongo_builder).handle(event)
+
+    def on_backup_action_delegator(self, event):
+        logger.info('on_backup_action_delegator({})'.format(event))
+        return BackupObserver(
             self._framework_wrapper,
             self._resources,
             self._pod,

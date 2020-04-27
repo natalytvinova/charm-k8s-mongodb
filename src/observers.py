@@ -17,6 +17,7 @@ logger = logging.getLogger()
 class BaseObserver:
 
     def __init__(self, framework, resources, pod, builder):
+        # TODO: add None values
         self._framework = framework
         self._resources = resources
         self._pod = pod
@@ -73,3 +74,9 @@ class StatusObserver(BaseObserver):
             return
         self._framework.unit_status_set(BlockedStatus('Pod is not ready'))
         logger.info('Pod is not ready')
+
+class BackupObserver(BaseObserver):
+
+    def handle(self, event):
+
+        pass
