@@ -26,3 +26,6 @@
   "database":
     "type": "filesystem"
     "location": "/data/db"
+  "backup":
+    "type": "filesystem"
+    "location": "/dump"

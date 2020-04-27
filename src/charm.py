@@ -102,6 +102,7 @@ class MongoDbCharm(CharmBase):
             self._framework_wrapper,
             self._resources,
             self._pod,
+            self._pvc,
             self._mongo_builder).handle(event)
 
 

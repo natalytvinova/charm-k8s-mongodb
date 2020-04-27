@@ -12,6 +12,9 @@ class MongoBuilder:
     def build_spec(self):
         return self.__make_pod_spec__(self._config['enable-sidecar'])
 
+    def build_backup_spec(self):
+        return self.__make_backup_spec__()
+
     def build_relation_data(self, formatter):
         return formatter.format(self.__make_mongodb_uri__())
 
@@ -105,6 +108,42 @@ class MongoBuilder:
             spec['containers'].append(self.__make_sidecar_spec__())
         return spec
 
+    def __make_backup_spec__(self):
+        """Make pod specification for backing up Kubernetes unit
+
+        Returns:
+            pod_spec: Pod specification backing up for Kubernetes unit
+        """
+        spec = 'pass'
+        return {
+            'containers': {
+                'name': 'mongodump',
+                'imageDetails': {
+                    'imagePath': self._images['mongodb-image'].image_path,
+                    'username': self._images['mongodb-image'].username,
+                    'password': self._images['mongodb-image'].password,
+                },
+                'command': [
+                    'mongodump',
+                    '--host', '10.1.69.20',  # TODO: proper host
+                    '--port', str(self._config['advertised-port']),
+                    '--out', '/dump',
+                    '--verbose'
+                ],
+                'volumeMounts': {
+                    'mountPath': '/dump',
+                    'name': 'mongodump',
+                },
+            },
+            'volumes': {
+                'name': 'mongodump',
+                'persistentVolumeClaim': {
+                    'claimName': 'backup-xxx',  # TODO: volume name from unit
+                },
+            },
+            'restartPolicy': 'Never',
+        }
+
 
 class K8sBuilder:
 
@@ -112,4 +151,5 @@ class K8sBuilder:
         self._resource = resource
 
     def demolish(self):
+        # Do we have smth in framework for it??
         self._resource.delete()

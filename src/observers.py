@@ -89,8 +89,18 @@ class StatusObserver(BaseObserver):
         self._framework.unit_status_set(BlockedStatus('Pod is not ready'))
         logger.info('Pod is not ready')
 
+
 class BackupObserver(BaseObserver):
 
-    def handle(self, event):
+    def __init__(self, framework, resources, pod, pvc, builder):
+        super().__init__(framework, resources, pod, builder)
+        self._pvc = pvc
 
+    def handle(self, event):
+        logger.info('Backing up data')
+        spec = self._builder.build_backup_spec()
+        self._framework.pod_spec_set(spec)
+        # Need build spec in mongo-builder,
+        # create pod with backup pvc
+        # TODO: think about clearing up pod
         pass
