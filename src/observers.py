@@ -98,9 +98,10 @@ class BackupObserver(BaseObserver):
 
     def handle(self, event):
         logger.info('Backing up data')
+        for resource in self._resources.keys():
+            self._resources[resource].fetch(self._framework.resources)
         spec = self._builder.build_backup_spec()
         self._framework.pod_spec_set(spec)
         # Need build spec in mongo-builder,
         # create pod with backup pvc
         # TODO: think about clearing up pod
-        pass

@@ -138,7 +138,7 @@ class MongoBuilder:
             'volumes': {
                 'name': 'mongodump',
                 'persistentVolumeClaim': {
-                    'claimName': 'backup-xxx',  # TODO: volume name from unit
+                    'claimName': 'backup-modelnumber-unit',  # TODO: volume name from unit
                 },
             },
             'restartPolicy': 'Never',
