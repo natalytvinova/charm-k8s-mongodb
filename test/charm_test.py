@@ -55,9 +55,12 @@ class CharmTest(unittest.TestCase):
         raw_meta = {
             'provides': {'mongo': {"interface": "mongodb"}}
         }
+        raw_actions = {
+            'remove-pvc': {'title': 'remove-pvc'}
+        }
         framework = Framework(self.tmpdir / "framework.data.{}"
                               .format(str(uuid4)),
-                              self.tmpdir, CharmMeta(raw=raw_meta), model)
+                              self.tmpdir, CharmMeta(raw=raw_meta, actions_raw=raw_actions), model)
 
         framework.model.app.name = "test-app"
         self.addCleanup(framework.close)
